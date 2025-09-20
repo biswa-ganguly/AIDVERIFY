@@ -8,9 +8,24 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "string",
+						"name": "transactionId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
 						"name": "campaignId",
-						"type": "uint256"
+						"type": "string"
+					},
+					{
+						"internalType": "bytes15",
+						"name": "donorId",
+						"type": "bytes15"
+					},
+					{
+						"internalType": "string",
+						"name": "donorUserName",
+						"type": "string"
 					},
 					{
 						"internalType": "uint256",
@@ -26,6 +41,118 @@
 				"name": "donate",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes15",
+						"name": "donorId",
+						"type": "bytes15"
+					}
+				],
+				"name": "getDonationsByDonorId",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "donationId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "campaignId",
+								"type": "string"
+							},
+							{
+								"internalType": "bytes15",
+								"name": "donorId",
+								"type": "bytes15"
+							},
+							{
+								"internalType": "string",
+								"name": "donorUserName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "proofHash",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct DonationManager.Donation[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "donorUsername",
+						"type": "string"
+					}
+				],
+				"name": "getDonationsByDonorUsername",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "donationId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "campaignId",
+								"type": "string"
+							},
+							{
+								"internalType": "bytes15",
+								"name": "donorId",
+								"type": "bytes15"
+							},
+							{
+								"internalType": "string",
+								"name": "donorUserName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "proofHash",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct DonationManager.Donation[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			}
 		],
@@ -57,11 +184,11 @@
 	},
 	"sources": {
 		"contracts/DonationManager.sol": {
-			"keccak256": "0xbc3876195019d68a8bde25a5406d6e80816470310e2254e9a3da83a85594c9df",
+			"keccak256": "0x63e1aec4aa0565512044ca7caa487da6bb8ada355aa770fc0b57b8aef91818fb",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://dded3d4bc3d53892254700743aa50ec408e3c61a48dd70c0404d292b5c06e0e3",
-				"dweb:/ipfs/QmafK1MsZbjARjRkT8eTrhGeJvmqdwPZW2Sb3KrttdsHe3"
+				"bzz-raw://aa1f1c0f02219925e97da3921b3be34ed9686f248ae6a5345f53367d494889b9",
+				"dweb:/ipfs/QmNd4xvzMJoyj1bRsxN4bnDsZbLTLVoonNZqNBL7g4Wdzu"
 			]
 		}
 	},

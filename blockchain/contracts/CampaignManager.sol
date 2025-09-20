@@ -7,26 +7,28 @@ contract CampaignManager {
         string title;
         string description;
         string location;
-        address ngo;            // NGO/admin wallet
+        string ngo;            // NGO email
         uint256 targetAmount;
         uint256 totalReceived;
         bool isActive;
     }
 
-    // This array will store all campaign IDs
+    // --- Storage ---
     bytes32[] public allCampaignIds;
+    mapping(bytes32 => Campaign) internal Campaigns;
 
-    mapping (bytes32 => Campaign) internal Campaigns;
+    // Mapping from NGO email → their campaigns
+    mapping(string => bytes32[]) internal campaignsByNgo;
 
     // --- Events ---
-    event CampaignCreated(bytes32 indexed campaignId, string title, address indexed ngo, uint256 targetAmount);
-    event CampaignClosed(bytes32 indexed campaignId, address indexed ngo);
-    event DonationReceived(bytes32 indexed campaignId, address indexed donor, uint256 amount);
+    event CampaignCreated(bytes32 indexed campaignId, string title, string indexed ngoEmail, uint256 targetAmount);
+    event CampaignClosed(bytes32 indexed campaignId, string indexed ngoEmail);
+    event DonationReceived(bytes32 indexed campaignId, string indexed donorEmail, uint256 amount);
 
     // --- Internal unique ID generator ---
-    function uniqueIdGenerator() private view returns(bytes32) {
+    function uniqueIdGenerator() private view returns (bytes32) {
         return keccak256(
-            abi.encodePacked(msg.sender, block.timestamp, block.prevrandao, blockhash(block.number-1))
+            abi.encodePacked(msg.sender, block.timestamp, block.prevrandao, blockhash(block.number - 1))
         );
     }
 
@@ -35,9 +37,11 @@ contract CampaignManager {
         string memory camp_name,
         string memory camp_desc,
         string memory camp_location,
+        string memory ngoEmail,
         uint256 camp_targetAmount
     ) public {
         require(camp_targetAmount > 0, "Target amount must be greater than 0");
+        require(bytes(ngoEmail).length > 0, "NGO email required");
 
         bytes32 campaignId = uniqueIdGenerator();
 
@@ -46,22 +50,23 @@ contract CampaignManager {
             title: camp_name,
             description: camp_desc,
             location: camp_location,
-            ngo: msg.sender,
+            ngo: ngoEmail,
             targetAmount: camp_targetAmount,
             totalReceived: 0,
             isActive: true
         });
 
         allCampaignIds.push(campaignId);
+        campaignsByNgo[ngoEmail].push(campaignId);
 
-        emit CampaignCreated(campaignId, camp_name, msg.sender, camp_targetAmount);
+        emit CampaignCreated(campaignId, camp_name, ngoEmail, camp_targetAmount);
     }
 
     // --- Get campaign details ---
     function getCampaign(bytes32 id) public view returns(
-        string memory, string memory, string memory, uint256, uint256, bool
+        string memory, string memory, string memory, uint256, uint256, bool, string memory
     ) {
-        require(Campaigns[id].ngo != address(0), "Campaign does not exist");
+        require(bytes(Campaigns[id].ngo).length > 0, "Campaign does not exist");
 
         Campaign memory camp = Campaigns[id];
         return (
@@ -70,26 +75,29 @@ contract CampaignManager {
             camp.location,
             camp.targetAmount,
             camp.totalReceived,
-            camp.isActive
+            camp.isActive,
+            camp.ngo
         );
     }
 
     // --- Close a campaign ---
-    function closeCampaign(bytes32 id) public {
-        require(Campaigns[id].ngo != address(0), "Campaign does not exist");
-        require(
-            msg.sender == Campaigns[id].ngo,
-            "Only Admin/NGO can close the campaign"
-        );
+    function closeCampaign(bytes32 id, string memory ngoEmail) public {
+        require(bytes(Campaigns[id].ngo).length > 0, "Campaign does not exist");
+        require(keccak256(bytes(ngoEmail)) == keccak256(bytes(Campaigns[id].ngo)), "Only the NGO can close this campaign");
         require(Campaigns[id].isActive, "Campaign is already closed");
 
         Campaigns[id].isActive = false;
 
-        emit CampaignClosed(id, msg.sender);
+        emit CampaignClosed(id, ngoEmail);
     }
 
     // --- Get all campaign IDs ---
-    function getAllCampaignID() public view returns(bytes32[] memory) {
+    function getAllCampaignID() public view returns (bytes32[] memory) {
         return allCampaignIds;
+    }
+
+    // --- Get campaigns for a specific NGO email ---
+    function getCampaignsByNgo(string memory ngoEmail) public view returns (bytes32[] memory) {
+        return campaignsByNgo[ngoEmail];
     }
 }

@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.30+commit.73712a01"
 	},
 	"language": "Solidity",
 	"output": {
@@ -16,9 +16,9 @@
 					},
 					{
 						"indexed": true,
-						"internalType": "address",
-						"name": "ngo",
-						"type": "address"
+						"internalType": "string",
+						"name": "ngoEmail",
+						"type": "string"
 					}
 				],
 				"name": "CampaignClosed",
@@ -41,9 +41,9 @@
 					},
 					{
 						"indexed": true,
-						"internalType": "address",
-						"name": "ngo",
-						"type": "address"
+						"internalType": "string",
+						"name": "ngoEmail",
+						"type": "string"
 					},
 					{
 						"indexed": false,
@@ -66,9 +66,9 @@
 					},
 					{
 						"indexed": true,
-						"internalType": "address",
-						"name": "donor",
-						"type": "address"
+						"internalType": "string",
+						"name": "donorEmail",
+						"type": "string"
 					},
 					{
 						"indexed": false,
@@ -105,6 +105,11 @@
 						"internalType": "bytes32",
 						"name": "id",
 						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "ngoEmail",
+						"type": "string"
 					}
 				],
 				"name": "closeCampaign",
@@ -130,6 +135,11 @@
 						"type": "string"
 					},
 					{
+						"internalType": "string",
+						"name": "ngoEmail",
+						"type": "string"
+					},
+					{
 						"internalType": "uint256",
 						"name": "camp_targetAmount",
 						"type": "uint256"
@@ -138,19 +148,6 @@
 				"name": "createCampaign",
 				"outputs": [],
 				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "bytes32",
-						"name": "id",
-						"type": "bytes32"
-					}
-				],
-				"name": "donate",
-				"outputs": [],
-				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -205,6 +202,30 @@
 						"internalType": "bool",
 						"name": "",
 						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "ngoEmail",
+						"type": "string"
+					}
+				],
+				"name": "getCampaignsByNgo",
+				"outputs": [
+					{
+						"internalType": "bytes32[]",
+						"name": "",
+						"type": "bytes32[]"
 					}
 				],
 				"stateMutability": "view",
@@ -226,7 +247,7 @@
 		"compilationTarget": {
 			"contracts/CampaignManager.sol": "CampaignManager"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "prague",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -239,11 +260,11 @@
 	},
 	"sources": {
 		"contracts/CampaignManager.sol": {
-			"keccak256": "0x2fda27ed769497cae76c829216eb2b730a5fbf0a0ae3a0cf803749e66283e862",
+			"keccak256": "0x841227c73bd5f50decf89c94d297a5689ddec8efdfa13c1f6d0cc35f2f43987a",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://3c6fe234665c63700eb393cffaa4d7f0f9fe20c81ca022e1ca1ba7bbf53a1e0f",
-				"dweb:/ipfs/QmSSKU1PAVHg4HJhS7SaF4iXTGtnU6KuNKmaWoUyUXjXRx"
+				"bzz-raw://e9d1a1efa98abf20ad0f3eb5ee8f1c80d1c93ab0ed1a71ea45ba7ec0a806c820",
+				"dweb:/ipfs/QmPMPerrYFkEMYjhmAg1rCsnySxTWaRgXtcKPyoQHfBPdB"
 			]
 		}
 	},
