@@ -67,9 +67,18 @@ contract NgoManager {
     }
 
     /// @notice Get NGO details by email
-    function getNgoByEmail(string memory _email) public view returns (NGO memory) {
+    function findNgoByEmail(string memory _email) public view returns (bool found, NGO memory ngo) {
         bytes32 ngoId = ngoIdByEmail[_email];
-        require(ngoId != 0x0, "NGO not found with this email");
-        return ngosById[ngoId];
+        if (ngoId == 0x0) {
+            return (false, NGO({
+                Ngo_id: 0x0,
+                NgoName: "",
+                regNo: 0,
+                website: "",
+                contactPerson: "",
+                contactEmail: ""
+            }));
+        }
+        return (true, ngosById[ngoId]);
     }
 }

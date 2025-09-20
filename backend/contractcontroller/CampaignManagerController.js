@@ -105,18 +105,32 @@ export const RegisterNgo = async (
 // Function to get NgoByEmail
 export const getNgoByEmail = async (contractAddress, email) => {
     try {
-        // Create a contract instance with just the provider for a read-only call
+        if (!email) {
+            throw new Error("Email parameter cannot be empty.");
+        }
+
         const ngoManagerContract = new ethers.Contract(
             contractAddress,
-            NgoManager_abi,
+            NgoManager_abi, // Your ABI
             provider
         );
-        
-        const ngo = await ngoManagerContract.getNgoByEmail(email);
 
+        // Call the new "no-revert" function
+        const [found, ngo] = await ngoManagerContract.findNgoByEmail(email);
+
+        // Check the boolean flag instead of catching an error
+        if (!found) {
+            console.log("NGO NOT FOUND WITH THIS EMAIL");
+            return null; // A clear, intentional "not found" return
+        }
+
+        console.log("NGO FOUND:", ngo);
         return ngo;
+
     } catch (err) {
-        console.error("Error fetching ngo:", err);
+        // This catch block now only handles REAL errors, like network issues
+        // or if the contract itself has a bug.
+        console.error("An unexpected error occurred while fetching NGO:", err);
         throw err;
     }
 };

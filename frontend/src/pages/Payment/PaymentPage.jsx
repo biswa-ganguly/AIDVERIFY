@@ -63,7 +63,7 @@ const PaymentSummaryCard = ({ data }) => (
 
 export default function PaymentPage() {
   const navigate = useNavigate();
-  const { campaignId } = useParams();
+  const { Id } = useParams();
   const { user } = useUser();
   const pageRef = useRef(null);
   const [campaignData, setCampaignData] = useState(null);
@@ -107,7 +107,7 @@ export default function PaymentPage() {
         const campaigns = await response.json();
         
         if (Array.isArray(campaigns)) {
-          const campaign = campaigns.find(c => c._id === campaignId);
+          const campaign = campaigns.find(c => c._id === Id);
           if (campaign) {
             setCampaignData({
               campaignTitle: campaign.campaignTitle || 'Untitled Campaign',
@@ -125,7 +125,7 @@ export default function PaymentPage() {
                 { amount: 2500, impact: 'Major impact' },
               ],
               liveDonorCount: Math.floor(Math.random() * 100) + 20,
-              campaignId: campaign._id
+              campaignId: campaign.campaignID
             });
           } else {
             console.error('Campaign not found');
@@ -140,12 +140,12 @@ export default function PaymentPage() {
       }
     };
 
-    if (campaignId) {
+    if (Id) {
       fetchCampaignData();
     } else {
       navigate('/home');
     }
-  }, [campaignId, navigate]);
+  }, [Id, navigate]);
 
   // Debug user authentication
   useEffect(() => {
@@ -180,85 +180,87 @@ export default function PaymentPage() {
   
   const uploadScreenshot = async () => {
     if (!screenshot) return;
-    
+
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append('image', screenshot);
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_OCR_URL}/dev/extract-payment-data`, {
-        method: 'POST',
-        body: formData
-      });
+      // Step 1: Send to OCR service to extract and validate data (remains the same)
+      const ocrFormData = new FormData();
+      ocrFormData.append('image', screenshot);
       
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (String(data.amount) === String(amount) && data.status === 'Completed') {
-          // Ensure we have a valid Clerk user ID
-          if (!user?.id || !user.id.startsWith('user_')) {
-            alert('❌ User authentication error. Please sign in again.');
-            return;
-          }
+      const ocrResponse = await fetch(`${import.meta.env.VITE_OCR_URL}/dev/extract-payment-data`, {
+        method: 'POST',
+        body: ocrFormData
+      });
 
-          // // Upload screenshot to get proof URL first
-          // let paymentProofPic = null;
-          // let paymentProofHash = null;
-          
-          // if (screenshot) {
-          //   const uploadFormData = new FormData();
-          //   uploadFormData.append('image', screenshot);
-            
-          //   try {
-          //     const uploadResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/upload-payment-proof`, {
-          //       method: 'POST',
-          //       body: uploadFormData
-          //     });
-              
-          //     if (uploadResponse.ok) {
-          //       const uploadResult = await uploadResponse.json();
-          //       paymentProofPic = uploadResult.imageUrl;
-          //       paymentProofHash = uploadResult.hash;
-          //     }
-          //   } catch (uploadErr) {
-          //     console.warn('Failed to upload payment proof:', uploadErr);
-          //   }
-          // }
-
-          // Save transaction to backend
-          const transactionResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/transaction`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              transactionId: data.transaction_id,
-              amount: parseInt(data.amount),
-              campaignId: campaignData.campaignId,
-              donorId: user.id, // This will be the Clerk user ID like user_31zld6XsSOliriHENMoD5J361tJ
-              donorEmail: email,
-              donorName: name,
-              paymentMethod: data.payment_method || 'UPI',
-              paymentProofPic: screenshot,
-            })
-          });
-
-          const transactionResult = await transactionResponse.json();
-          if (!transactionResult.success) {
-            alert(`❌ Transaction save failed: ${transactionResult.error}`);
-            return;
-          }
-          
-          setShowDialog(false);
-          setShowSuccessDialog(true);
-          setTimeout(() => {
-            navigate('/home');
-          }, 3000);
-        } else {
-          alert('❌ Payment amount mismatch or payment not completed. Please try again.');
-        }
+      if (!ocrResponse.ok) {
+        throw new Error('Failed to extract data from screenshot.');
       }
+
+      const ocrData = await ocrResponse.json();
+
+      console.log(`Amount Set:${amount}`)
+      console.log(`Amount:${ocrData.amount}`)
+      console.log(`OCR Status: ${ocrData.status}`);
+        
+      // --- Validation and User Auth Checks (remain the same) ---
+      if (String(ocrData.amount) !== String(amount)) {
+        alert('❌ Payment amount mismatch or transaction not completed. Please try again.');
+        setIsUploading(false);
+        return;
+      }
+
+      if (!user?.id || !user.id.startsWith('user_')) {
+        alert('❌ User authentication error. Please sign in again.');
+        setIsUploading(false);
+        return;
+      }
+
+      // Step 2 & 3 Combined: Send transaction data AND the image file to your backend
+      const transactionFormData = new FormData();
+
+      // Append all the text/data fields
+      transactionFormData.append('transactionId', ocrData.transaction_id);
+      transactionFormData.append('amount', parseInt(ocrData.amount));
+      transactionFormData.append('campaignId', campaignData.campaignId);
+      transactionFormData.append('donorId', user.id);
+      transactionFormData.append('donorEmail', email);
+      transactionFormData.append('donorName', name);
+      transactionFormData.append('paymentMethod', ocrData.payment_method || 'UPI');
+      
+      // Append the actual image file itself
+      transactionFormData.append('paymentProofPic', screenshot); 
+
+      // --- log transactionFormData ---
+      console.log("--- Inspecting FormData Contents ---");
+      for (const pair of transactionFormData.entries()) {
+        // pair[0] is the key, pair[1] is the value
+        console.log(`${pair[0]}:`, pair[1]); 
+      }
+      
+      // The single fetch call to your backend
+      const transactionResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/transaction`, {
+        method: 'POST',
+        // IMPORTANT: Do NOT set a 'Content-Type' header.
+        // The browser automatically sets it to 'multipart/form-data' with the correct boundary.
+        body: transactionFormData 
+      });
+
+      if (!transactionResponse.ok) {
+        const errorResult = await transactionResponse.json();
+        throw new Error(errorResult.error || 'Failed to save transaction.');
+      }
+      
+      // --- Success (remains the same) ---
+      setShowDialog(false);
+      setShowSuccessDialog(true);
+      setTimeout(() => {
+        navigate('/home');
+      }, 3000);
+
     } catch (err) {
-      console.error('Upload failed:', err);
-      alert('❌ Upload failed. Please try again.');
+      console.error('Upload process failed:', err);
+      alert(`❌ An error occurred: ${err.message}`);
     } finally {
       setIsUploading(false);
     }

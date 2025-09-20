@@ -1,9 +1,9 @@
 {
-  "campaignAddress": "0xaF87282065BAB460Df185439138164449a77De5b",
-  "ngoAddress": "0xB699BCEB8c0c505df9b99A43CE1249f92272Ea46",
-  "donorAddress": "0xA625f03bbE8ea8095c1A5dce98Fe361D0BC12578",
-  "donationAddress": "0xBfD0541aEC98503bca133e8cA283DfF0d71195BF",
+  "campaignAddress": "0x4B819F644cc4953aDFDf92276F6Ac4531D77C3eE",
+  "ngoAddress": "0x09252654e9a9f2eac91d6D6B59a67453a06ecF7D",
+  "donorAddress": "0xb1292e0E5866119A96E9f6d2843382b3cbB1E352",
+  "donationAddress": "0xd1609e6aFe870b757f881b6580A511e8b5282C46",
   "network": "https://f047f542a779.ngrok-free.app",
-  "deployer": "0x9784e4dbCB5AB0C67F83ff34Ef6549feF86ed316",
-  "timestamp": "2025-09-20T08:24:39.564Z"
+  "deployer": "0xFF509da5B79DE057a7823Ec2D97B0b65D72c7114",
+  "timestamp": "2025-09-20T09:26:12.037Z"
 }

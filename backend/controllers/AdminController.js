@@ -1,7 +1,5 @@
 import NgoApplication from "../models/NgoApplication.js";
-import { RegisterCampaign , RegisterNgo  } from "../contractcontroller/CampaignManagerController.js";
-
-import { getNgoByEmail } from "../testblockchain.js";
+import { RegisterCampaign , RegisterNgo , getNgoByEmail  } from "../contractcontroller/CampaignManagerController.js";
 
 import { sendAdminDecision } from "../services/NgoMailService.js";
 import deploycontractaddresses from "../deployed.json" with {type : "json"};
@@ -52,12 +50,13 @@ export const NGOApprovalFunction = async (req, res) => {
             let ngoID = application.ngoID; // Use existing NGO ID if available
 
             // Check if NGO is already registered on the blockchain
-            const existingNgo = await getNgoByEmail(application.email);
+            const existingNgo = await getNgoByEmail(deploycontractaddresses.ngoAddress,application.email);
 
             console.log("Existing NGO:", existingNgo);
 
+
             // Assuming getNgoByEmail returns a struct array where ngoId is the first element
-            if (existingNgo && existingNgo[0] !== "0x000000000000000000000000000000") {
+            if (existingNgo != null && existingNgo[0] !== "0x000000000000000000000000000000") {
                 console.log("Existing NGO found, skipping registration.");
                 ngoID = existingNgo[0];
             } else {
@@ -72,7 +71,8 @@ export const NGOApprovalFunction = async (req, res) => {
                     application.contactPerson,
                     application.email
                 );
-                ngoID = newNgo[0]; // Assuming RegisterNgo returns the new NGO ID
+                //console.log("NEW NGO CREATED WITH NgoID:",newNgo);
+                ngoID = newNgo; // Assuming RegisterNgo returns the new NGO ID
             }
 
             // Register the campaign regardless of whether the NGO existed
