@@ -12,6 +12,12 @@ AidVerify is a comprehensive blockchain-based platform that ensures transparent 
 - **Multi-Role Dashboard**: Separate interfaces for donors, NGOs, admins, and field workers
 - **Real-Time Distribution**: Live aid distribution tracking with fraud prevention
 - **OCR Document Processing**: Automated document verification for NGO applications
+- **Immutable Ledger**: Record all donations and spending in an immutable blockchain ledger
+- **Live Dashboard**: Real-time tracking so donors can see exactly how their money is being used
+- **Smart Contract Milestones**: Automated fund release only when specific project milestones are met
+- **Blockchain Audit Reports**: Independently verifiable audit reports backed by blockchain technology
+- **Token Reward System**: Incentivize continued donations through token-based rewards
+- **Crowdfunding Integration**: Support for specific, small-scale project funding
 
 ### Key Components
 - **Smart Contract Integration**: Ethereum-based campaign and donation management
