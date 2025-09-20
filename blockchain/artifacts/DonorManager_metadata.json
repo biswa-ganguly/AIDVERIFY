@@ -1,0 +1,93 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_donorUserName",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "_isVerified",
+						"type": "bool"
+					}
+				],
+				"name": "addDonor",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_username",
+						"type": "string"
+					}
+				],
+				"name": "getDonorDetails",
+				"outputs": [
+					{
+						"internalType": "bytes15",
+						"name": "",
+						"type": "bytes15"
+					},
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/DonorManager.sol": "DonorManager"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/DonorManager.sol": {
+			"keccak256": "0xdbf117655237f352e823bb015c6a861d569fb5e3a34b70b86e593c348cd19b19",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://4212c56e05221b76d857b3c6166ed9e0ed01f50a5453a85747bcfff9172d01cb",
+				"dweb:/ipfs/QmZKWTt1d4bRtRe9GsFse2KnbxJtAr3sRnriovdFqiNWJM"
+			]
+		}
+	},
+	"version": 1
+}

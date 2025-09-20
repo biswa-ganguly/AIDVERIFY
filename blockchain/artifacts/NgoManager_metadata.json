@@ -1,0 +1,234 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "ngoId",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "NgoName",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "regNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "website",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "contactPerson",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "contactEmail",
+						"type": "string"
+					}
+				],
+				"name": "NgoRegistered",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_email",
+						"type": "string"
+					}
+				],
+				"name": "getNgoByEmail",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "Ngo_id",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "string",
+								"name": "NgoName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "regNo",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "website",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "contactPerson",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "contactEmail",
+								"type": "string"
+							}
+						],
+						"internalType": "struct NgoManager.NGO",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "_ngoId",
+						"type": "bytes32"
+					}
+				],
+				"name": "getNgoById",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "Ngo_id",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "string",
+								"name": "NgoName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "regNo",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "website",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "contactPerson",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "contactEmail",
+								"type": "string"
+							}
+						],
+						"internalType": "struct NgoManager.NGO",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_ngoName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_regNo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_website",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_contactPerson",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_contactEmail",
+						"type": "string"
+					}
+				],
+				"name": "registerNgo",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"getNgoByEmail(string)": {
+					"notice": "Get NGO details by email"
+				},
+				"getNgoById(bytes32)": {
+					"notice": "Get NGO details by ngoId"
+				},
+				"registerNgo(string,uint256,string,string,string)": {
+					"notice": "Register a new NGO"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/NgoManager.sol": "NgoManager"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/NgoManager.sol": {
+			"keccak256": "0x4521518b6efc196b520533bde0e6a23e9a95a43f8da41f9fe6d077c9d9b86f64",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://c5051698785606ec876b3145388b32efce8c7fdba7d80fa263d7aae1d01eff47",
+				"dweb:/ipfs/QmUezE3taC9Mf6a8X5GnZZoDvKFHKQb1zNk3VwuCk1eWBx"
+			]
+		}
+	},
+	"version": 1
+}

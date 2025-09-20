@@ -1,0 +1,69 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "campaignId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "proofHash",
+						"type": "string"
+					}
+				],
+				"name": "donate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/DonationManager.sol": "DonationManager"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/DonationManager.sol": {
+			"keccak256": "0xbc3876195019d68a8bde25a5406d6e80816470310e2254e9a3da83a85594c9df",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://dded3d4bc3d53892254700743aa50ec408e3c61a48dd70c0404d292b5c06e0e3",
+				"dweb:/ipfs/QmafK1MsZbjARjRkT8eTrhGeJvmqdwPZW2Sb3KrttdsHe3"
+			]
+		}
+	},
+	"version": 1
+}
