@@ -6,6 +6,7 @@ import Home from "./pages/Home/Home";
 import CampaignDetailPage from "./pages/Campaign/CampaignDetailPage";
 import DonorDashboardPage from "./pages/DonorDashboard/DonorDashboardPage";
 import PaymentPage from "./pages/Payment/PaymentPage";
+import CrowdfundingPage from "./pages/Crowdfunding/CrowdfundingPage";
 import NgoApplicationPage from "./pages/NgoApplication/NgoApplicationPage";
 import NgoDashboardPage from "./pages/NgoDashboard/NgoDashboardPage";
 import FieldWorkerPage from "./pages/FieldWorker/FieldWorkerPage";
@@ -89,6 +90,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/home", element: <Home /> },
       { path: "/campaign/:id", element: <CampaignDetailPage /> },
+      { path: "/crowdfunding", element: <CrowdfundingPage /> },
       { path: "/dashboard", element: <DonorDashboardPage /> },
       { path: "/dashboard/:donorId", element: <DonorDashboardPage /> },
       { path: "/donate/:campaignId", element: <PaymentPage /> },

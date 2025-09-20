@@ -188,7 +188,8 @@ export default function PaymentPage() {
       const ocrFormData = new FormData();
       ocrFormData.append('image', screenshot);
       
-      const ocrResponse = await fetch(`${import.meta.env.VITE_OCR_URL}/dev/extract-payment-data`, {
+      console.log('OCR URL:', `https://qh3t36esm8.execute-api.us-east-1.amazonaws.com/dev/extract-payment-data`);
+      const ocrResponse = await fetch(`https://qh3t36esm8.execute-api.us-east-1.amazonaws.com/dev/extract-payment-data`, {
         method: 'POST',
         body: ocrFormData
       });
@@ -247,8 +248,14 @@ export default function PaymentPage() {
       });
 
       if (!transactionResponse.ok) {
-        const errorResult = await transactionResponse.json();
-        throw new Error(errorResult.error || 'Failed to save transaction.');
+        let errorMessage = 'Failed to save transaction.';
+        try {
+          const errorResult = await transactionResponse.json();
+          errorMessage = errorResult.error || errorMessage;
+        } catch {
+          errorMessage = `Server error (${transactionResponse.status}). Please check if backend is running.`;
+        }
+        throw new Error(errorMessage);
       }
       
       // --- Success (remains the same) ---

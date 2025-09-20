@@ -45,6 +45,10 @@ const DonorNav = () => {
                   Campaigns
                 </Link>
                 
+                <Link to="/crowdfunding" className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+                  Crowdfunding
+                </Link>
+                
                 <Link to={`/dashboard/${user?.id || ''}`} className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                   Dashboard
                 </Link>
