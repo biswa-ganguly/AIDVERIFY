@@ -63,7 +63,7 @@ const PaymentSummaryCard = ({ data }) => (
 
 export default function PaymentPage() {
   const navigate = useNavigate();
-  const { Id } = useParams();
+  const { campaignId } = useParams();
   const { user } = useUser();
   const pageRef = useRef(null);
   const [campaignData, setCampaignData] = useState(null);
@@ -107,7 +107,7 @@ export default function PaymentPage() {
         const campaigns = await response.json();
         
         if (Array.isArray(campaigns)) {
-          const campaign = campaigns.find(c => c._id === Id);
+          const campaign = campaigns.find(c => c._id === campaignId);
           if (campaign) {
             setCampaignData({
               campaignTitle: campaign.campaignTitle || 'Untitled Campaign',
@@ -140,12 +140,12 @@ export default function PaymentPage() {
       }
     };
 
-    if (Id) {
+    if (campaignId) {
       fetchCampaignData();
     } else {
       navigate('/home');
     }
-  }, [Id, navigate]);
+  }, [campaignId, navigate]);
 
   // Debug user authentication
   useEffect(() => {
@@ -277,12 +277,22 @@ export default function PaymentPage() {
   }, [countdown]);
   
   useLayoutEffect(() => {
+    if (!campaignData || loading) return;
+    
     const ctx = gsap.context(() => {
-        gsap.from(".payment-form-section", { autoAlpha: 0, y: 30, stagger: 0.2, duration: 0.6, ease: 'power3.out' });
-        gsap.from(".summary-card", { autoAlpha: 0, x: 30, duration: 0.6, ease: 'power3.out' });
+        const formSections = gsap.utils.toArray(".payment-form-section");
+        const summaryCard = gsap.utils.toArray(".summary-card");
+        
+        if (formSections.length > 0) {
+          gsap.from(formSections, { autoAlpha: 0, y: 30, stagger: 0.2, duration: 0.6, ease: 'power3.out' });
+        }
+        
+        if (summaryCard.length > 0) {
+          gsap.from(summaryCard, { autoAlpha: 0, x: 30, duration: 0.6, ease: 'power3.out' });
+        }
     }, pageRef);
     return () => ctx.revert();
-  }, []);
+  }, [campaignData, loading]);
   
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -399,8 +409,10 @@ export default function PaymentPage() {
               </Card>
             </div>
 
-            <div className="hidden lg:block summary-card">
-              <PaymentSummaryCard data={campaignData} />
+            <div className="hidden lg:block">
+              <div className="summary-card">
+                <PaymentSummaryCard data={campaignData} />
+              </div>
             </div>
           </div>
         </div>
