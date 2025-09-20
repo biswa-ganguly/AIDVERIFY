@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import CampaignManager_json from "../../blockchain/build/contracts/CampaignManager.json" with { type: "json" };
-import NGOManager from "../../blockchain/build/contracts/NGOManager.json" with { type: "json" };
+import NGOManager from "../../blockchain/build/contracts/NgoManager.json" with { type: "json" };
 import deploycontractaddresses from "../deployed.json" with { type: "json" };
 
 const provider = new ethers.JsonRpcProvider(deploycontractaddresses.network);
