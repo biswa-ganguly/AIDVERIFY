@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Camera, CheckCircle, XCircle, Loader2, LogOut, History, UserCheck, Gift, AlertTriangle, Flag } from 'lucide-react';
 
-const API_BASE = 'https://d21f015e6e6a.ngrok-free.app';
+const API_BASE = 'https://fa5db539ec4d.ngrok-free.app';
 
 const FieldWorkerHeader = () => (
     <header className="flex items-center justify-between pb-4 border-b">
