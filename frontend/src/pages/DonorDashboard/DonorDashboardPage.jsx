@@ -11,8 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wallet, Heart, TrendingUp, FileDown, ArrowRight, CheckCircle, Search } from 'lucide-react';
+import { Wallet, Heart, TrendingUp, FileDown, ArrowRight, CheckCircle, Search, Receipt, Download } from 'lucide-react';
 import DonorNav from '../../components/DonorNav';
+import FundUtilizationDashboard from '../../components/FundUtilizationDashboard';
 import { getDaysLeft } from '../../utils/getDaysLeft';
 import jsPDF from 'jspdf';
 
@@ -315,6 +316,29 @@ export default function DonorDashboardPage() {
     }
   };
 
+  // Download fund utilization receipt
+  const downloadUtilizationReceipt = async (utilizationId) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fund-utilization/receipt/${utilizationId}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `receipt_${utilizationId}.png`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        alert('Error downloading receipt');
+      }
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+      alert('Error downloading receipt');
+    }
+  };
+
   // Fetch donor data
   useEffect(() => {
     const fetchDonorData = async () => {
@@ -362,6 +386,7 @@ export default function DonorDashboardPage() {
         } else if (campaignsData.success && Array.isArray(campaignsData.data)) {
           setAllCampaigns(campaignsData.data);
         }
+
       } catch (err) {
         console.error('Error fetching donor data:', err);
         // Don't set error for network issues, just log them
@@ -598,7 +623,12 @@ export default function DonorDashboardPage() {
             </Card>
           </section>
 
-          {/* 4. Impact Tracker */}
+          {/* 4. Fund Utilization Receipts */}
+          <section className="dashboard-section">
+            <FundUtilizationDashboard />
+          </section>
+
+          {/* 5. Impact Tracker */}
           <section className="dashboard-section">
             <h2 className="text-2xl font-bold mb-4">Your Impact Tracker</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
