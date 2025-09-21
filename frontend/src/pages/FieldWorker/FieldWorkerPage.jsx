@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Camera, CheckCircle, XCircle, Loader2, LogOut, History, UserCheck, Gift, AlertTriangle, Flag } from 'lucide-react';
+import { ShieldAlert,Camera,CheckCircle,XCircle,Loader2,LogOut,History,UserCheck,Gift,AlertTriangle,Flag} from "lucide-react";
 
-const API_BASE = 'https://8e798c7fcaa9.ngrok-free.app';
+// const API_BASE = 'https://8e798c7fcaa9.ngrok-free.app';
+const API_BASE = 'http://127.0.0.1:8000';
 
 const FieldWorkerHeader = () => (
     <header className="flex items-center justify-between pb-4 border-b">
@@ -112,6 +113,31 @@ const ExistingUserView = ({ username, onReportFraud, onScanNext }) => (
     </Card>
 );
 
+const SpoofingDetectedView = ({ username, onReportFraud, onScanNext }) => (
+    <Card className="border-red-500 bg-red-50/50">
+        <CardHeader className="text-center">
+            <div className="mx-auto bg-red-100 p-3 rounded-full w-fit mb-2">
+                <ShieldAlert className="w-10 h-10 text-red-600" />
+            </div>
+            <CardTitle className="text-red-800">Spoofing Detected</CardTitle>
+            <CardDescription className="text-red-700">
+                Suspicious activity detected for {username}
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="flex gap-2">
+                <Button onClick={onReportFraud} variant="destructive" className="flex-1">
+                    <Flag className="mr-2 h-4 w-4" /> Report Fraud
+                </Button>
+                <Button onClick={onScanNext} className="flex-1">
+                    <Camera className="mr-2 h-4 w-4" /> Scan Next
+                </Button>
+            </div>
+        </CardContent>
+    </Card>
+);
+
+
 const DistributionView = ({ username, onDistribute, onMarkFraud }) => (
     <Card className="border-green-500 bg-green-50/50">
         <CardHeader className="text-center">
@@ -205,7 +231,11 @@ export default function FieldWorkerPage() {
     const stopCamera = () => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
-            videoRef.current.srcObject = null;
+
+            if (videoRef.current) {   // 👈 check before touching it
+                videoRef.current.srcObject = null;
+            }
+
             streamRef.current = null;
         }
         setCameraActive(false);
@@ -246,7 +276,9 @@ export default function FieldWorkerPage() {
             
             if (!result.face_detected) {
                 setShowNoFacePopup(true);
-            } else if (result.user_in_system) {
+            } else if(result.spoofing_detect){
+                setStatus('detect_spoofing')
+            }else if (result.user_in_system) {
                 setStatus('existingUser');
             } else {
                 // Auto-add new user and go to distribution
@@ -326,6 +358,14 @@ export default function FieldWorkerPage() {
 
     const renderMainContent = () => {
         switch (status) {
+            case 'detect_spoofing':
+                return(
+                    <SpoofingDetectedView  
+                        username={verificationResult?.username}
+                        onReportFraud={handleReportFraud}
+                        onScanNext={handleNext}
+                    />
+                )
             case 'existingUser':
                 return (
                     <ExistingUserView 
