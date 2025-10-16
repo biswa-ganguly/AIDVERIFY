@@ -365,7 +365,7 @@ export const processNewCampaign = async (req, res) => {
     const newCampaign = new NgoApplication({
       ...formData,
       documents: uploadedDocs,
-      AdminApproval: "pending",
+      AdminApproval: "approved",
       AIApproval: "pending",
       ngoID: existingNgo.ngoID, // Use existing NGO's ID
       registrationNumber: existingNgo.registrationNumber,

@@ -3,7 +3,7 @@ import CampaignManager_json from "../../blockchain/build/contracts/CampaignManag
 import NGOManager from "../../blockchain/build/contracts/NgoManager.json" with { type: "json" };
 import deploycontractaddresses from "../deployed.json" with { type: "json" };
 
-const provider = new ethers.JsonRpcProvider(deploycontractaddresses.network);
+const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const CampaignManager_abi = CampaignManager_json.abi;
 const NgoManager_abi=NGOManager.abi;
 

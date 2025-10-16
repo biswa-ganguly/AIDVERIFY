@@ -8,6 +8,19 @@ import deploycontractaddresses from "../deployed.json" with { type: "json" };
 import { create as ipfsClient } from "ipfs-http-client";
 import { ethers } from "ethers";
 
+// Connect to your ngrok-exposed IPFS node
+// const ipfs = ipfsClient({
+//     url: process.env.IPFS_PUBLIC, // ngrok URL
+//     port: 443, // HTTPS default
+//     protocol: 'https'
+// });
+
+// Connect to your local IPFS node's API
+const ipfs = ipfsClient({
+  host: 'localhost',
+  port: 5001,
+  protocol: 'http'
+});
 // IPFS connection disabled to avoid connection issues
 // const ipfs = ipfsClient({
 //     url: process.env.IPFS_PUBLIC,
