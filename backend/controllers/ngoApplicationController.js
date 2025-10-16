@@ -28,36 +28,38 @@ const uploadToCloudinary = (fileBuffer, folder) => {
 const sendToAiAgent = async (formData) => {
   try {
     const apiPayload = {
-      campaign_title: formData.campaignTitle,
+      campaign_title: formData.campaignTitle || "Unknown Campaign",
       campaign_details: {
-        cause_of_campaign: formData.description,
-        location_affected: formData.location,
-        duration_or_timeframe: `Start date: ${formData.startDate}, End date: ${formData.endDate}`,
-        total_fund_needed_inr: formData.goalAmount,
+        cause_of_campaign: formData.description || "Campaign description",
+        location_affected: formData.location || "India",
+        duration_or_timeframe: `Start date: ${formData.startDate || '2024-01-01'}, End date: ${formData.endDate || '2024-12-31'}`,
+        total_fund_needed_inr: parseInt(formData.goalAmount) || 100000,
         fund_needed_breakdown: [{
           item: "Campaign Fund",
           cost_per_unit_inr: "N/A",
           quantity_needed: "N/A",
-          total_cost_inr: formData.goalAmount
+          total_cost_inr: parseInt(formData.goalAmount) || 100000
         }]
       },
       ngo_details: {
-        ngo_name: formData.ngoName,
-        ngo_registration_id: formData.registrationNumber,
-        contact_email: formData.email
+        ngo_name: formData.ngoName || "NGO Name",
+        ngo_registration_id: formData.registrationNumber || "REG-12345",
+        contact_email: formData.email || "ngo@example.com"
       },
       donation_impact: {
-        target_beneficiaries_count: parseInt(formData.beneficiaries) || 0,
-        donation_call_to_action: `Donate to support ${formData.campaignTitle}`
+        target_beneficiaries_count: parseInt(formData.beneficiaries) || 100,
+        donation_call_to_action: `Donate to support ${formData.campaignTitle || 'this campaign'}`
       },
       bank_details: {
-        account_holder_name: formData.ngoName,
-        bank_name: formData.bankName,
-        account_number: formData.accountNumber,
-        ifsc_code: formData.ifscCode,
+        account_holder_name: formData.ngoName || "NGO Name",
+        bank_name: formData.bankName || "State Bank of India",
+        account_number: formData.accountNumber || "1234567890123456",
+        ifsc_code: formData.ifscCode || "SBIN0000001",
         account_type: "Current"
       }
     };
+
+    console.log("Sending to AI:", JSON.stringify(apiPayload, null, 2));
 
     const response = await fetch("https://ngo-claim-verifier.vercel.app/api/verify_claim", {
       method: "POST",
@@ -68,7 +70,9 @@ const sendToAiAgent = async (formData) => {
     });
 
     if (!response.ok) {
-      throw new Error(`AI Agent request failed: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error("AI API Error Response:", errorText);
+      throw new Error(`AI Agent request failed: ${response.status} ${response.statusText}`);
     }
 
     const result = await response.json();
@@ -220,7 +224,7 @@ export const setAgentResponse = async (req, res) => {
     }
 
     const finalTrustScore = trust_score.final_trust_score;
-    const status = finalTrustScore >= 50 ? "verified" : "rejected";
+    const status = finalTrustScore >= 70 ? "verified" : "rejected";
 
     // ✅ Find NGO campaign by ngo name
     const updatedApp = await NgoApplication.findOneAndUpdate(

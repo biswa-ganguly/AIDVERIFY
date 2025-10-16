@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileCheck, Megaphone, DollarSign, Building, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, FileCheck, Megaphone, DollarSign, Building, Users, Settings, Brain } from 'lucide-react';
 import { NavLink } from './NavLink';
 
 
@@ -13,6 +13,7 @@ export const Sidebar = ({ activeView, setActiveView }) => (
       <NavLink viewName="campaigns" icon={Megaphone} activeView={activeView} onNavigate={setActiveView}>Campaigns</NavLink>
       <NavLink viewName="donations" icon={DollarSign} activeView={activeView} onNavigate={setActiveView}>Donations</NavLink>
       <NavLink viewName="ngos" icon={Building} activeView={activeView} onNavigate={setActiveView}>NGOs</NavLink>
+      <NavLink viewName="ai-responses" icon={Brain} activeView={activeView} onNavigate={setActiveView}>AI Responses</NavLink>
 
     </nav>
   </aside>

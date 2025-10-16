@@ -6,6 +6,7 @@ import { DonationsView } from './views/DonationsView';
 import { NgoManagementView } from './views/NgoManagementView';
 import { UsersView } from './views/UsersView';
 import { SettingsView } from './views/SettingsView';
+import { AIResponseView } from './views/AIResponseView';
 import axios from "axios";
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
       case 'ngos': return <NgoManagementView />;
       case 'users': return <UsersView />;
       case 'settings': return <SettingsView />;
+      case 'ai-responses': return <AIResponseView />;
       default: return <DashboardView />;
     }
   };

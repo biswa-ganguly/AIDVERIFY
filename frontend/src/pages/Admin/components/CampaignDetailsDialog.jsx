@@ -199,54 +199,72 @@ export const CampaignDetailsDialog = ({ open, onClose, application }) => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="text-center p-4 border rounded-lg">
-                      <TrendingUp className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                      <p className="font-semibold text-sm text-gray-600">Trust Score</p>
-                      <p className={`text-2xl font-bold ${getTrustScoreColor(application.trustScore)}`}>
-                        {application.trustScore || 'N/A'}
-                      </p>
+                  {application.aiVerificationData ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="text-center p-4 border rounded-lg">
+                          <TrendingUp className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                          <p className="font-semibold text-sm text-gray-600">Trust Score</p>
+                          <p className={`text-2xl font-bold ${getTrustScoreColor(application.aiVerificationData.trust_score?.final_trust_score + '%')}`}>
+                            {application.aiVerificationData.trust_score?.final_trust_score || 'N/A'}%
+                          </p>
+                        </div>
+                        <div className="text-center p-4 border rounded-lg">
+                          <Shield className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                          <p className="font-semibold text-sm text-gray-600">Verification Status</p>
+                          <Badge className={getStatusColor(application.AIApproval)}>
+                            {application.AIApproval || 'N/A'}
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      <Separator className="my-4" />
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="p-3 border rounded-lg">
+                          <p className="font-semibold text-sm text-gray-600 mb-2">Bank Verification</p>
+                          <Badge variant={application.aiVerificationData.bank_result?.verified ? "default" : "destructive"}>
+                            {application.aiVerificationData.bank_result?.verified ? 'Verified' : 'Not Verified'}
+                          </Badge>
+                          <p className="text-xs mt-1">{application.aiVerificationData.bank_result?.bank_name}</p>
+                        </div>
+                        <div className="p-3 border rounded-lg">
+                          <p className="font-semibold text-sm text-gray-600 mb-2">Disaster Verification</p>
+                          <Badge variant={application.aiVerificationData.disaster_result?.event_verified ? "default" : "destructive"}>
+                            {application.aiVerificationData.disaster_result?.event_verified ? 'Verified' : 'Not Verified'}
+                          </Badge>
+                          <p className="text-xs mt-1">{application.aiVerificationData.disaster_result?.source}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <p className="font-semibold text-sm text-gray-600 mb-2">Module Scores</p>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>NGO Score: {application.aiVerificationData.trust_score?.module_scores?.ngo_score || 0}</div>
+                            <div>Bank Score: {application.aiVerificationData.trust_score?.module_scores?.bank_score || 0}</div>
+                            <div>Disaster Score: {application.aiVerificationData.trust_score?.module_scores?.disaster_score || 0}</div>
+                            <div>Cross-ref Score: {application.aiVerificationData.trust_score?.module_scores?.cross_reference_score || 0}</div>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <p className="font-semibold text-sm text-gray-600 mb-2">Feedback</p>
+                          <div className="text-sm bg-gray-50 p-3 rounded">
+                            {application.aiVerificationData.trust_score?.feedback?.map((item, index) => (
+                              <div key={index}>• {item}</div>
+                            )) || 'No feedback available'}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Shield className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No AI verification data available</p>
+                      <p className="text-sm">This campaign hasn't been processed by the AI verification system yet.</p>
                     </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <Shield className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                      <p className="font-semibold text-sm text-gray-600">Verification Status</p>
-                      <Badge className={getStatusColor(application.verification?.includes('True') ? 'approved' : 'rejected')}>
-                        {application.verification || 'N/A'}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <p className="font-semibold text-sm text-gray-600 mb-2">Verification Status</p>
-                      <p className="text-sm bg-gray-50 p-3 rounded">
-                        {application.verification || 'No verification data available'}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-sm text-gray-600 mb-2">Verification Reason</p>
-                      <p className="text-sm bg-gray-50 p-3 rounded">
-                        {application.verificationReason || 'No reason provided'}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-sm text-gray-600 mb-2">Sources Used</p>
-                      <p className="text-sm bg-gray-50 p-3 rounded">
-                        {application.verificationSources || 'No sources listed'}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-sm text-gray-600 mb-2">Detailed Verification Report</p>
-                      <p className="text-sm bg-gray-50 p-3 rounded">
-                        {application.verificationDetails || 'No detailed report available'}
-                      </p>
-                    </div>
-                  </div>
+                  )}
                   
                   <div className="mt-4 p-3 bg-blue-50 rounded">
                     <p className="text-xs text-blue-700">

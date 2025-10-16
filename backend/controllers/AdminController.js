@@ -118,6 +118,30 @@ export const NGOApprovalFunction = async (req, res) => {
     }
 };
 
+export const getAIResponses = async (req, res) => {
+  try {
+    const applications = await NgoApplication.find({
+      aiVerificationData: { $ne: null }
+    }).select('ngoName campaignTitle AIApproval aiVerificationData createdAt');
+
+    const aiResponses = applications.map(app => ({
+      ngoName: app.ngoName,
+      campaignTitle: app.campaignTitle,
+      aiApproval: app.AIApproval,
+      trustScore: app.aiVerificationData?.trust_score?.final_trust_score || 0,
+      bankVerified: app.aiVerificationData?.bank_result?.verified || false,
+      disasterVerified: app.aiVerificationData?.disaster_result?.event_verified || false,
+      feedback: app.aiVerificationData?.trust_score?.feedback || [],
+      createdAt: app.createdAt
+    }));
+
+    res.status(200).json({ success: true, data: aiResponses });
+  } catch (error) {
+    console.error('Error fetching AI responses:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 function randomHex256Node() {
   return '0x' + crypto.randomBytes(32).toString('hex');
 }
