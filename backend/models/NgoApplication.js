@@ -44,6 +44,7 @@ const NgoApplicationSchema = new mongoose.Schema({
   signature: String,
   AdminApproval: { type:String , default:"pending"},
   AIApproval: { type:String , default:"pending"},
+  aiVerificationData: { type: Object, default: null },
 }, { timestamps: true });
 
 export default mongoose.model("NgoApplication", NgoApplicationSchema);
