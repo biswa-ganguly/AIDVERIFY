@@ -7,6 +7,7 @@ import { awardTokens } from "./tokenRewardController.js";
 import deploycontractaddresses from "../deployed.json" with { type: "json" };
 import { create as ipfsClient } from "ipfs-http-client";
 import { ethers } from "ethers";
+import crypto from "crypto";
 
 // Connect to your ngrok-exposed IPFS node
 // const ipfs = ipfsClient({
@@ -88,26 +89,26 @@ export const createTransaction = async (req, res) => {
         let isDonorVerified = false;
         let donorBlockchainId = "";
 
-        const registeredDonor = await getDonor(donorregistrationaddress, donorEmail);
+        //const registeredDonor = await getDonor(donorregistrationaddress, donorEmail);
 
-        if (registeredDonor && registeredDonor.donorId) {
-            isDonorVerified = registeredDonor.isVerified;
-            donorBlockchainId = registeredDonor.donorId;
-        }
+        // if (registeredDonor && registeredDonor.donorId) {
+        //     isDonorVerified = registeredDonor.isVerified;
+        //     donorBlockchainId = registeredDonor.donorId;
+        // }
 
         // 2. Register the donor only if not already verified
-        if (!isDonorVerified) {
-            const donordetails = await RegisterDonor(
-                donorregistrationaddress,
-                process.env.NGO_PRIVATE_KEY,
-                donorEmail,
-                true
-            );
-            console.log("Newly registered donor details:", donordetails);
-            donorBlockchainId = donordetails.donorId; // Set the blockchain ID from the registration
-        } else {
-            console.log("Donor is already verified, skipping registration.");
-        }
+        // if (!isDonorVerified) {
+        //     const donordetails = await RegisterDonor(
+        //         donorregistrationaddress,
+        //         process.env.NGO_PRIVATE_KEY,
+        //         donorEmail,
+        //         true
+        //     );
+        //     console.log("Newly registered donor details:", donordetails);
+        //     donorBlockchainId = donordetails.donorId; // Set the blockchain ID from the registration
+        // } else {
+        //     console.log("Donor is already verified, skipping registration.");
+        // }
 
         // 3. Record the donation on the blockchain
         const donationId = transactionId;
@@ -129,7 +130,8 @@ export const createTransaction = async (req, res) => {
             donorId,
             donorEmail,
             donorName,
-            donorBlockchainId: donorBlockchainId,
+            // donorBlockchainId: donorBlockchainId,              // Change this when Blockchain not bypassing
+            donorBlockchainId: randomHex256Node(),                // Comment out this when Blockchain not bypassing
             paymentMethod: paymentMethod || "UPI",
             status: "completed",
             paymentProofPic,
@@ -278,3 +280,7 @@ export const getDonorStats = async (req, res) => {
         });
     }
 };
+
+function randomHex256Node() {
+  return '0x' + crypto.randomBytes(32).toString('hex');
+}
