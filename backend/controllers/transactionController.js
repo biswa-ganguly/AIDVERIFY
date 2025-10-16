@@ -8,10 +8,17 @@ import { create as ipfsClient } from "ipfs-http-client";
 import { ethers } from "ethers";
 
 // Connect to your ngrok-exposed IPFS node
+// const ipfs = ipfsClient({
+//     url: process.env.IPFS_PUBLIC, // ngrok URL
+//     port: 443, // HTTPS default
+//     protocol: 'https'
+// });
+
+// Connect to your local IPFS node's API
 const ipfs = ipfsClient({
-    url: process.env.IPFS_PUBLIC, // ngrok URL
-    port: 443, // HTTPS default
-    protocol: 'https'
+  host: 'localhost',
+  port: 5001,
+  protocol: 'http'
 });
 
 export const createTransaction = async (req, res) => {

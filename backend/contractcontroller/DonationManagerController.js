@@ -3,7 +3,8 @@ import DonorManager_json from "../../blockchain/build/contracts/DonorManager.jso
 import DonationManager_json from "../../blockchain/build/contracts/DonationManager.json" with { type: "json" };
 import deploycontractaddresses from "../deployed.json" with { type: "json" };
 
-const provider = new ethers.JsonRpcProvider(deploycontractaddresses.network);
+//const provider = new ethers.JsonRpcProvider(deploycontractaddresses.network);
+const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const DonorManager_abi = DonorManager_json.abi;
 const DonationManager_abi = DonationManager_json.abi;
 
