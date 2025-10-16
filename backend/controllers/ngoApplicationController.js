@@ -27,13 +27,44 @@ const uploadToCloudinary = (fileBuffer, folder) => {
 // ✅ Helper to forward text data to AI Agent
 const sendToAiAgent = async (formData) => {
   try {
-    const response = await fetch(process.env.AGENTIC_AI_TRIGGER_ENDPOINT, {
+    const apiPayload = {
+      campaign_title: formData.campaignTitle,
+      campaign_details: {
+        cause_of_campaign: formData.description,
+        location_affected: formData.location,
+        duration_or_timeframe: `Start date: ${formData.startDate}, End date: ${formData.endDate}`,
+        total_fund_needed_inr: formData.goalAmount,
+        fund_needed_breakdown: [{
+          item: "Campaign Fund",
+          cost_per_unit_inr: "N/A",
+          quantity_needed: "N/A",
+          total_cost_inr: formData.goalAmount
+        }]
+      },
+      ngo_details: {
+        ngo_name: formData.ngoName,
+        ngo_registration_id: formData.registrationNumber,
+        contact_email: formData.email
+      },
+      donation_impact: {
+        target_beneficiaries_count: parseInt(formData.beneficiaries) || 0,
+        donation_call_to_action: `Donate to support ${formData.campaignTitle}`
+      },
+      bank_details: {
+        account_holder_name: formData.ngoName,
+        bank_name: formData.bankName,
+        account_number: formData.accountNumber,
+        ifsc_code: formData.ifscCode,
+        account_type: "Current"
+      }
+    };
+
+    const response = await fetch("https://ngo-claim-verifier.vercel.app/api/verify_claim", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.AGENTIC_AI_TRIGGER_AUTHORIZATION}`,
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(apiPayload),
     });
 
     if (!response.ok) {
@@ -42,6 +73,18 @@ const sendToAiAgent = async (formData) => {
 
     const result = await response.json();
     console.log("AI Agent Response:", result);
+    
+    // Update the NGO application with the AI response
+    if (result.trust_score?.final_trust_score) {
+      await NgoApplication.findOneAndUpdate(
+        { campaignTitle: formData.campaignTitle },
+        { 
+          AIApproval: result.trust_score.final_trust_score >= 70 ? "verified" : "rejected",
+          aiVerificationData: result
+        }
+      );
+    }
+    
     return result;
   } catch (error) {
     console.error("Error sending to AI Agent:", error);
@@ -92,7 +135,7 @@ export const applyNgo = async (req, res) => {
     await newApplication.save();
 
     // ✅ Send text data to AI agent after saving
-    sendToAiAgent(formData);
+    await sendToAiAgent(formData);
 
     //Send Confirmation Mail
     await sendApplicationReceived(formData.email, formData.ngoName, formData.campaignTitle);
@@ -167,25 +210,31 @@ export const NgoAllApplicationsFetcher = async (req, res) => {
 // ✅ Controller to set AI Agent response decision
 export const setAgentResponse = async (req, res) => {
   try {
-    const { trustScore, originalCampaignData } = req.body;
+    const { trust_score, entities, bank_result, disaster_result } = req.body;
 
-    if (!originalCampaignData?.campaignTitle || !trustScore) {
+    if (!entities?.ngo_name || !trust_score?.final_trust_score) {
       return res.status(400).json({
         success: false,
-        error: "Invalid AI response: campaignTitle or trustScore missing",
+        error: "Invalid AI response: required fields missing",
       });
     }
 
-    // Convert "5%" -> 5
-    const numericTrustScore = parseInt(trustScore.replace("%", "").trim(), 10);
+    const finalTrustScore = trust_score.final_trust_score;
+    const status = finalTrustScore >= 50 ? "verified" : "rejected";
 
-    const status = numericTrustScore > 40 ? "verified" : "rejected";
-
-    // ✅ Find NGO campaign by campaignTitle
+    // ✅ Find NGO campaign by ngo name
     const updatedApp = await NgoApplication.findOneAndUpdate(
-      { campaignTitle: originalCampaignData.campaignTitle },
-      { AIApproval: status },
-      { new: true }
+      { ngoName: entities.ngo_name },
+      { 
+        AIApproval: status,
+        aiVerificationData: {
+          entities,
+          bank_result,
+          disaster_result,
+          trust_score
+        }
+      },
+      { new: true, sort: { createdAt: -1 } }
     );
 
     if (!updatedApp) {
@@ -201,7 +250,7 @@ export const setAgentResponse = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `AI approval set to ${status} (Trust Score: ${numericTrustScore}%)`,
+      message: `AI approval set to ${status} (Trust Score: ${finalTrustScore})`,
       data: updatedApp,
     });
   } catch (error) {
@@ -380,7 +429,7 @@ export const processNewCampaign = async (req, res) => {
     await newCampaign.save();
 
     // send to AI for fact-check
-    sendToAiAgent(formData);
+    await sendToAiAgent(formData);
 
     res.status(201).json({
       success: true,
