@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Wallet, Heart, TrendingUp, FileDown, ArrowRight, CheckCircle, Search, Receipt, Download } from 'lucide-react';
 import DonorNav from '../../components/DonorNav';
 import FundUtilizationDashboard from '../../components/FundUtilizationDashboard';
+import TokenRewards from '../../components/TokenRewards';
 import { getDaysLeft } from '../../utils/getDaysLeft';
 import jsPDF from 'jspdf';
 
@@ -623,12 +624,17 @@ export default function DonorDashboardPage() {
             </Card>
           </section>
 
-          {/* 4. Fund Utilization Receipts */}
+          {/* 4. Token Rewards */}
+          <section className="dashboard-section">
+            <TokenRewards />
+          </section>
+
+          {/* 5. Fund Utilization Receipts */}
           <section className="dashboard-section">
             <FundUtilizationDashboard />
           </section>
 
-          {/* 5. Impact Tracker */}
+          {/* 6. Impact Tracker */}
           <section className="dashboard-section">
             <h2 className="text-2xl font-bold mb-4">Your Impact Tracker</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

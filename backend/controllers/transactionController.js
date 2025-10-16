@@ -3,6 +3,7 @@ import NgoApplication from "../models/NgoApplication.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 import { RegisterDonor, getDonor, donate } from "../contractcontroller/DonationManagerController.js";
+import { awardTokens } from "./tokenRewardController.js";
 import deploycontractaddresses from "../deployed.json" with { type: "json" };
 import { create as ipfsClient } from "ipfs-http-client";
 import { ethers } from "ethers";
@@ -20,6 +21,12 @@ const ipfs = ipfsClient({
   port: 5001,
   protocol: 'http'
 });
+// IPFS connection disabled to avoid connection issues
+// const ipfs = ipfsClient({
+//     url: process.env.IPFS_PUBLIC,
+//     port: 443,
+//     protocol: 'https'
+// });
 
 export const createTransaction = async (req, res) => {
     try {
@@ -54,9 +61,8 @@ export const createTransaction = async (req, res) => {
         const donorregistrationaddress = deploycontractaddresses.donorAddress;
         const donationcontractaddress = deploycontractaddresses.donationAddress;
 
-        // ✅ If a file is uploaded, upload to Cloudinary and IPFS
+        // ✅ If a file is uploaded, upload to Cloudinary only
         if (req.file) {
-            // 1. Upload to Cloudinary
             const streamUpload = (reqFile) => {
                 return new Promise((resolve, reject) => {
                     let stream = cloudinary.uploader.upload_stream(
@@ -74,11 +80,8 @@ export const createTransaction = async (req, res) => {
             };
             const cloudinaryResult = await streamUpload(req.file);
             paymentProofPic = cloudinaryResult.secure_url;
-
-            // 2. Upload to IPFS
-            const ipfsResult = await ipfs.add(req.file.buffer);
-            paymentProofHash = ipfsResult.path;
-            paymentProofHashPic = `https://ipfs.io/ipfs/${paymentProofHash}`;
+            paymentProofHash = "cloudinary_only";
+            paymentProofHashPic = cloudinaryResult.secure_url;
         }
 
         // 1. Check if the donor is already registered and verified
@@ -136,6 +139,9 @@ export const createTransaction = async (req, res) => {
 
         await newTransaction.save();
 
+        // Award tokens for donation
+        const tokensAwarded = await awardTokens(donorId, donorEmail, amount, campaignId);
+
         // Update campaign receivedAmount
         const campaign = await NgoApplication.findOne({ campaignID: campaignId });
         if (campaign) {
@@ -150,7 +156,8 @@ export const createTransaction = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "Transaction recorded successfully",
-            data: newTransaction
+            data: newTransaction,
+            tokensAwarded
         });
     } catch (error) {
         console.error("Error creating transaction:", error);

@@ -12,6 +12,8 @@ import setUserRoleRoute from "./routes/setUserRoleRoute.js";
 import AdminControllerRoute from "./routes/AdminControllerRoute.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import fundUtilizationRoutes from "./routes/fundUtilizationRoutes.js";
+import tokenRewardRoutes from "./routes/tokenRewardRoutes.js";
+import crowdfundingRoutes from "./routes/crowdfundingRoutes.js";
 
 dotenv.config();
 
@@ -30,6 +32,8 @@ app.use("/api/admin", AdminControllerRoute);
 app.use("/api/user", setUserRoleRoute);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/fund-utilization", fundUtilizationRoutes);
+app.use("/api/tokens", tokenRewardRoutes);
+app.use("/api/crowdfunding", crowdfundingRoutes);
 
 //Test Route
 app.get("/",(req,res)=>{
