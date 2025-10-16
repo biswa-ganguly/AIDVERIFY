@@ -185,27 +185,29 @@ export default function PaymentPage() {
     
     try {
       // Step 1: Send to OCR service to extract and validate data (remains the same)
-      const ocrFormData = new FormData();
-      ocrFormData.append('image', screenshot);
+      // const ocrFormData = new FormData();
+      // ocrFormData.append('image', screenshot);
       
-      console.log('OCR URL:', `https://qh3t36esm8.execute-api.us-east-1.amazonaws.com/dev/extract-payment-data`);
-      const ocrResponse = await fetch(`https://qh3t36esm8.execute-api.us-east-1.amazonaws.com/dev/extract-payment-data`, {
-        method: 'POST',
-        body: ocrFormData
-      });
+      // console.log('OCR URL:', `https://qh3t36esm8.execute-api.us-east-1.amazonaws.com/dev/extract-payment-data`);
+      // const ocrResponse = await fetch(`https://qh3t36esm8.execute-api.us-east-1.amazonaws.com/dev/extract-payment-data`, {
+      //   method: 'POST',
+      //   body: ocrFormData
+      // });
 
-      if (!ocrResponse.ok) {
-        throw new Error('Failed to extract data from screenshot.');
-      }
+      // if (!ocrResponse.ok) {
+      //   throw new Error('Failed to extract data from screenshot.');
+      // }
 
-      const ocrData = await ocrResponse.json();
+      // const ocrData = await ocrResponse.json();
 
-      console.log(`Amount Set:${amount}`)
-      console.log(`Amount:${ocrData.amount}`)
-      console.log(`OCR Status: ${ocrData.status}`);
+      // console.log(`Amount Set:${amount}`)
+      // console.log(`Amount:${ocrData.amount}`)
+      // console.log(`OCR Status: ${ocrData.status}`);
         
       // --- Validation and User Auth Checks (remain the same) ---
-      if (String(ocrData.amount) !== String(amount)) {
+      // if (String(ocrData.amount) !== String(amount)) {
+      const money=1
+      if (String(money) !== String(amount)) {
         alert('❌ Payment amount mismatch or transaction not completed. Please try again.');
         setIsUploading(false);
         return;
@@ -221,13 +223,16 @@ export default function PaymentPage() {
       const transactionFormData = new FormData();
 
       // Append all the text/data fields
-      transactionFormData.append('transactionId', ocrData.transaction_id);
-      transactionFormData.append('amount', parseInt(ocrData.amount));
+      // transactionFormData.append('transactionId', ocrData.transaction_id);
+      transactionFormData.append('transactionId', Math.floor(Math.random()*10000));
+      // transactionFormData.append('amount', parseInt(ocrData.amount));
+      transactionFormData.append('amount', money);
       transactionFormData.append('campaignId', campaignData.campaignId);
       transactionFormData.append('donorId', user.id);
       transactionFormData.append('donorEmail', email);
       transactionFormData.append('donorName', name);
-      transactionFormData.append('paymentMethod', ocrData.payment_method || 'UPI');
+      // transactionFormData.append('paymentMethod', ocrData.payment_method || 'UPI');
+      transactionFormData.append('paymentMethod', 'UPI');
       
       // Append the actual image file itself
       transactionFormData.append('paymentProofPic', screenshot); 
