@@ -20,7 +20,7 @@ export const FundUtilizationView = ({ ngoName, ngoData }) => {
     items: '',
     receipt: null
   });
-  const [ocrVerifying, setOcrVerifying] = useState(false);
+
 
   useEffect(() => {
     console.log('FundUtilizationView - ngoData:', ngoData);
@@ -49,50 +49,7 @@ export const FundUtilizationView = ({ ngoName, ngoData }) => {
     }
   };
 
-  const verifyWithOCR = async () => {
-    if (!formData.receipt) {
-      toast.error('Please upload a receipt first.');
-      return;
-    }
-    
-    console.log('Starting OCR verification...');
-    setOcrVerifying(true);
-    const ocrFormData = new FormData();
-    ocrFormData.append('image', formData.receipt);
 
-    try {
-      console.log('Calling OCR API:', `${import.meta.env.VITE_OCR_URL}/dev/extract-payment-data`);
-      const response = await fetch(`${import.meta.env.VITE_OCR_URL}/dev/extract-payment-data`, {
-        method: 'POST',
-        body: ocrFormData
-      });
-      
-      console.log('OCR Response status:', response.status);
-      const ocrData = await response.json();
-      console.log('OCR Data:', ocrData);
-      
-      const ocrAmount = parseFloat(ocrData.amount);
-      const enteredAmount = parseFloat(formData.amount);
-      
-      console.log('Comparing amounts:', { ocrAmount, enteredAmount });
-      
-      if (Math.abs(ocrAmount - enteredAmount) < 1) {
-        toast.success(`OCR verification successful! Receipt amount (₹${ocrAmount}) matches entered amount (₹${enteredAmount}).`, {
-          action: {
-            label: "Submit to Blockchain",
-            onClick: () => submitToBackend()
-          }
-        });
-      } else {
-        toast.error(`OCR verification failed! Receipt amount (₹${ocrAmount}) does not match entered amount (₹${enteredAmount}). Please check and try again.`);
-      }
-    } catch (error) {
-      console.error('OCR verification failed:', error);
-      toast.error('OCR verification failed. Please try again or check your receipt image.');
-    } finally {
-      setOcrVerifying(false);
-    }
-  };
 
   const submitToBackend = async () => {
     if (!user?.emailAddresses?.[0]?.emailAddress || !ngoData) return;
@@ -128,7 +85,7 @@ export const FundUtilizationView = ({ ngoName, ngoData }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await verifyWithOCR();
+    await submitToBackend();
   };
 
 
@@ -187,9 +144,9 @@ export const FundUtilizationView = ({ ngoName, ngoData }) => {
                 required 
               />
             </div>
-            <Button className="w-full" type="submit" disabled={ocrVerifying || submitting}>
+            <Button className="w-full" type="submit" disabled={submitting}>
               <Eye className="mr-2 h-4 w-4" /> 
-              {ocrVerifying ? 'Verifying with OCR...' : 'Verify Receipt & Submit'}
+              {submitting ? 'Submitting...' : 'Submit Receipt'}
             </Button>
           </form>
         </CardContent>
