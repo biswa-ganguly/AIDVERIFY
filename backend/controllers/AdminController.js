@@ -49,54 +49,60 @@ export const NGOApprovalFunction = async (req, res) => {
                 return res.status(400).json({ message: "Contract Address or Wallet Private Key missing" });
             }
 
-            // let ngoID = application.ngoID; // Use existing NGO ID if available
+            let ngoID = application.ngoID; // Use existing NGO ID if available
 
             // Check if NGO is already registered on the blockchain
-            //const existingNgo = await getNgoByEmail(deploycontractaddresses.ngoAddress,application.email);
+            const existingNgo = await getNgoByEmail(deploycontractaddresses.ngoAddress,application.email);
 
-            // console.log("Existing NGO:", existingNgo);
+            console.log("Existing NGO:", existingNgo);
 
 
             // Assuming getNgoByEmail returns a struct array where ngoId is the first element
-            // if (existingNgo != null && existingNgo[0] !== "0x000000000000000000000000000000") {
-            //     console.log("Existing NGO found, skipping registration.");
-            //     ngoID = existingNgo[0];
-            // } else {
-            //     // If NGO doesn't exist, register a new one
-            //     console.log("Registering new NGO on blockchain...");
-            //     const newNgo = await RegisterNgo(
-            //         ngoManagerContractAddress,
-            //         walletprivatekey,
-            //         application.ngoName,
-            //         application.registrationNumber,
-            //         application.website,
-            //         application.contactPerson,
-            //         application.email
-            //     );
-            //     //console.log("NEW NGO CREATED WITH NgoID:",newNgo);
-            //     ngoID = newNgo; // Assuming RegisterNgo returns the new NGO ID
-            // }
+            if (existingNgo != null && existingNgo[0] !== "0x000000000000000000000000000000") {
+                console.log("Existing NGO found, skipping registration.");
+                ngoID = existingNgo[0];
+            } else {
+                // If NGO doesn't exist, register a new one
+                console.log("Registering new NGO on blockchain...");
+                const newNgo = await RegisterNgo(
+                    ngoManagerContractAddress,
+                    walletprivatekey,
+                    application.ngoName,
+                    application.registrationNumber,
+                    application.website,
+                    application.contactPerson,
+                    application.email
+                );
+                //console.log("NEW NGO CREATED WITH NgoID:",newNgo);
+                ngoID = newNgo; // Assuming RegisterNgo returns the new NGO ID
+            }
 
-            // Register the campaign regardless of whether the NGO existed
-            // const campaignID = await RegisterCampaign(
-            //     campaignManagerContractAddress,
-            //     walletprivatekey,
-            //     ngoID, // Use the correct NGO ID
-            //     application.campaignTitle,
-            //     application.description,
-            //     application.location,
-            //     application.goalAmount
+            //Register the campaign regardless of whether the NGO existed
+            const campaignID = await RegisterCampaign(
+                campaignManagerContractAddress,
+                walletprivatekey,
+                ngoID, // Use the correct NGO ID
+                application.campaignTitle,
+                application.description,
+                application.location,
+                application.goalAmount
+            );
+
+            // let ngoId=randomHex256Node();
+            // const updatedApp = await NgoApplication.findByIdAndUpdate(
+            //     applicationid,
+            //     { AdminApproval: "approved", campaignID: randomHex256Node(), ngoID: ngoId },
+            //     { new: true }
             // );
 
-            let ngoId=randomHex256Node();
             const updatedApp = await NgoApplication.findByIdAndUpdate(
                 applicationid,
-                { AdminApproval: "approved", campaignID: randomHex256Node(), ngoID: ngoId },
+                { AdminApproval: "approved", campaignID: campaignID, ngoID: ngoID },
                 { new: true }
             );
             
             // Send approval email with dashboard link
-            await sendAdminDecision(application.email, application.ngoName, application.campaignTitle, true, ngoId);
+            await sendAdminDecision(application.email, application.ngoName, application.campaignTitle, true, ngoID);
 
             return res.status(200).json({
                 message: "Application Approved & Campaign Registered",
@@ -110,6 +116,30 @@ export const NGOApprovalFunction = async (req, res) => {
         console.error("Error in NGOApprovalFunction:", error);
         return res.status(500).json({ message: "Server Error", error: error.message });
     }
+};
+
+export const getAIResponses = async (req, res) => {
+  try {
+    const applications = await NgoApplication.find({
+      aiVerificationData: { $ne: null }
+    }).select('ngoName campaignTitle AIApproval aiVerificationData createdAt');
+
+    const aiResponses = applications.map(app => ({
+      ngoName: app.ngoName,
+      campaignTitle: app.campaignTitle,
+      aiApproval: app.AIApproval,
+      trustScore: app.aiVerificationData?.trust_score?.final_trust_score || 0,
+      bankVerified: app.aiVerificationData?.bank_result?.verified || false,
+      disasterVerified: app.aiVerificationData?.disaster_result?.event_verified || false,
+      feedback: app.aiVerificationData?.trust_score?.feedback || [],
+      createdAt: app.createdAt
+    }));
+
+    res.status(200).json({ success: true, data: aiResponses });
+  } catch (error) {
+    console.error('Error fetching AI responses:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
 
 function randomHex256Node() {
